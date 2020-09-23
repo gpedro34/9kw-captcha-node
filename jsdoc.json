@@ -1,0 +1,46 @@
+{
+  "tags": {
+    "allowUnknownTags": ["category"]
+  },
+  "source": {
+    "include": ["./src"],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules|docs|test)"
+  },
+  "plugins": [
+    "plugins/markdown",
+    "node_modules/jsdoc-mermaid",
+    "node_modules/better-docs/category"
+  ],
+  "opts": {
+    "encoding": "utf8",
+    "destination": "./docs/",
+    "package": "package.json",
+    "readme": "README.md",
+    "recurse": true,
+    "verbose": true,
+    "tutorials": "./docs/static/tutorials",
+    "template": "./node_modules/better-docs"
+  },
+  "markdown": {
+    "idInHeadings": true
+  },
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "search": true,
+    "default": {
+      "staticFiles": {
+        "include": []
+      }
+    },
+    "better-docs": {
+      "trackingCode": "tracking-code-which-will-go-to-the-HEAD",
+      "name": "9kw.eu Captcha Solver API Wrapper for NodeJS",
+      "title": "9kw.eu Captcha Solver API Wrapper for NodeJS",
+      "css": "static/css/extra.css",
+      "hideGenerator": true,
+      "navLinks": []
+    }
+  }
+}
