@@ -1,0 +1,7 @@
+body {
+  overflow-y: hidden;
+}
+
+body > div.top-nav > div > div.menu > div > a {
+  display: none !important;
+}
