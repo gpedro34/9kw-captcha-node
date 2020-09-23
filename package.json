@@ -1,7 +1,7 @@
 {
   "name": "9kw-captcha-node",
   "version": "1.0.0",
-  "description": "9kw api wrapper to solve captchas",
+  "description": "9kw API Wrapper to solve captchas",
   "main": "src/index.js",
   "scripts": {
     "flow": "npm run lint && npm run docs",
@@ -25,6 +25,13 @@
   ],
   "author": "gpedro34",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gpedro34/9kw-captcha-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gpedro34/9kw-captcha-node/issues"
+  },
   "dependencies": {
     "superagent": "^2.3.0"
   },
