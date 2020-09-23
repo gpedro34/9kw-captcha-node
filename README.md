@@ -2,7 +2,7 @@
 
 This is an api wrapper for the 9kw captcha solver service. An Api Key is needed, generate using the 9kw website.
 
-- [Documentation](module.exports.html)
+- [Documentation](https://gpedro34.github.io/9kw-captcha-node/module.exports.html)
 
 ## Installation
 
