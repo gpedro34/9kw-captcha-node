@@ -74,7 +74,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="module.exports_module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#callbackSuperAgent">callbackSuperAgent</a></li></ul></div>
                 
             </nav>
         </div>
@@ -91,7 +91,7 @@
     
 
 
-    <h3>9kw-captcha-node 1.0.0</h3>
+    <h3>9kw-captcha-node 1.0.2</h3>
 
 
 
@@ -108,107 +108,162 @@
 
 
     <section>
-        <article><h1 id="9kw">9kw</h1>
+        <article><h1 id="1.-kw">1. kw</h1>
 <p>This is an api wrapper for the 9kw captcha solver service. An Api Key is needed, generate using the 9kw website.</p>
 <ul>
-<li><a href="module.exports.html">Documentation</a></li>
+<li><a href="https://www.9kw.eu/?r=139389">9kw.eu</a></li>
+<li><a href="https://gpedro34.github.io/9kw-captcha-node/module.exports.html">Library Documentation</a></li>
 </ul>
-<h2 id="installation">Installation</h2>
+<h2 id="1.1.-installation">1.1. Installation</h2>
 <p>node:</p>
-<pre class="prettyprint source lang-sh"><code>npm install 9kw
+<pre class="prettyprint source lang-sh"><code>npm install 9kw-captcha-node
 
 </code></pre>
-<h2 id="promises---async%2Fawait">Promises - Async/Await</h2>
-<p><strong>NOTE: All methods return Promises.</strong></p>
-<pre class="prettyprint source lang-js"><code>const api9kw = require(&quot;9kw&quot;);
-const captcha = new api9kw(9KW_API_KEY);
+<p>This library supports environment variables to pass parameters like API Key:</p>
+<table>
+<thead>
+<tr>
+<th>ENV variable</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CAPTCHA_API_KEY_9KW</td>
+<td>String</td>
+<td>API Key</td>
+</tr>
+<tr>
+<td>CAPTCHA_SOURCE_9KW</td>
+<td>String</td>
+<td>9kw Source (app indicator)</td>
+</tr>
+<tr>
+<td>CAPTCHA_OLD_SOURCE_9KW</td>
+<td>String</td>
+<td>9kw Old Source (indicator for captcha type)</td>
+</tr>
+<tr>
+<td>CAPTCHA_PRIO_9KW</td>
+<td>Number</td>
+<td>9kw default priority</td>
+</tr>
+<tr>
+<td>CAPTCHA_DEBUG_9KW</td>
+<td>Number</td>
+<td>Don't spend credits and get fake solutions. For testing...</td>
+</tr>
+</tbody>
+</table>
+<p>In alternative you can pass it as parameters when instantiating the API constructor</p>
+<h2 id="1.2.-promises---async%2Fawait">1.2. Promises - Async/Await</h2>
+<pre class="prettyprint source lang-js"><code>const Api9kw = require(&quot;9kw-captcha-node&quot;);
+const captcha = Api9kw(9KW_API_KEY);
+
+const api = new Api9kw(/* You can pass parameters here or just use the ENV vars */);
 
 (async () => {
   try {
-    // Submit the image file with the captcha
-    await captcha.async.submit(&quot;./captcha.png&quot;);
+    // Get the balance of credits from 9kw
+    const balance = await api.asyncGetBalance();
+    console.log(`BALANCE: ${balance} credits`);
 
-    // you can also submit using a siteKey
-    // await captcha.async.submit(SITE_KEY, SITE_URL);
+    // Submit a local image file with the captcha
+    // const captchaId = await api.asyncSubmitFile(config.pathToFile);
 
-    // you can also submit using a url
-    // await captcha.async.submitUrl(url);
+    // Submit using a Image Base 64 of the captha
+    // const captchaId = await api.asyncSubmitBase64(config.image_base64);
 
-    // you can also submit using a base64 string
-    // await captcha.async.submitBase64(data);
+    // Submit using a Image URL of the captha
+    // const captchaId = await api.asyncSubmitUrl(config.image_url);
+
+    // Submit CaptchaV2 (using a siteKey + siteUrl)
+    // CaptchaV2 will need to be solved by someone in real time
+    //   so using the priority becomes important if you want faster captchas
+    //   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
+    //   If you want them faster, up the prio and you will pay one extra credit per captcha
+    const captchaId = await api.asyncSubmit(SITEKEY, SITEURL, OVERWRITE_PRIO_IF_YOU_WANT);
+    console.log(`CAPTCHA ID: ${captchaId}`);
 
     // Get the solution of the captcha with a timeout of 40 seconds (optional)
     // this means that the callback will be called when the captcha is solved
+    // For image Solving 9kw seems to store the solutions in their own DB
+    //   and some are instantaneous others may take some more but usually under 30 sec
+    // For CaptchaV2 (sitekey + siteUrl) will need to be solved by someone in real time
+    //   so using the priority becomes important if you want faster captchas
+    //   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
+    //   If you want them faster, up the prio and you will pay one extra credit per captcha
     // usually is solved under 30s (default timeout is 30 seconds)
-    await captcha.async.getSolutionLoop(captchaID, 40);
-
-    // Tell 9kw the solution was correct or not
-    await captcha.async.isCorrect(captchaID, true);
-
-    // Get the 9kw server check info
-    await captcha.async.serverCheck();
-
-    // Get your account balance (credits)
-    await captcha.async.getBalance();
+    const solution = await api.asyncGetSolutionLoop(captchaId, 300);
+    console.log(&quot;SOLUTION: &quot;, solution);
   } catch (err) {
-    console.error(err);
+    console.error(err); // Timeout or NO_USER
   }
 })();
 </code></pre>
-<h2 id="callbacks">Callbacks</h2>
-<p><strong>NOTE: All methods are asynchronous. Use the callbacks correctly.</strong></p>
-<pre class="prettyprint source lang-js"><code>const api9kw = require(&quot;9kw&quot;);
-const captcha = new api9kw(9KW_API_KEY);
+<h2 id="1.3.-callbacks">1.3. Callbacks</h2>
+<pre class="prettyprint source lang-js"><code>const Api9kw = require(&quot;9kw&quot;);
+const api = new Api9kw();
 
-// Submit the captcha, you can also submit using an url or base64 string
-// .submitUrl(url, cb) or .submitBase64(data, cb) methods
-captcha.submit(&quot;./captcha.png&quot;, (err, newID) => {
+// Get your account balance (credits)
+api.getBalance((err, balance) => {
+  console.log(balance);
+});
+
+// Submit a local image file with the captcha
+// api.submitFile(&quot;./captcha.png&quot;, (err, newID) => {
+//   if (err) {
+//     console.log(err);
+//     return;
+//   }
+//   console.log(&quot;Captcha uploaded!: &quot; + captchaId);
+//   // Next step is to get the solution of the uploaded captcha using the new captchaID
+// });
+
+// Submit using a Image Base 64 of the captha
+// api.submitUrl(base64, (err, newID) => {
+//   if (err) {
+//     console.log(err);
+//     return;
+//   }
+//   console.log(&quot;Captcha uploaded!: &quot; + captchaId);
+//   // Next step is to get the solution of the uploaded captcha using the new captchaID
+// });
+
+// Submit using a Image URL of the captha
+api.submit(URL, (err, newID) => {
   if (err) {
     console.log(err);
     return;
   }
-  console.log(&quot;Captcha uploaded!: &quot; + captchaID);
+  console.log(&quot;Captcha uploaded!: &quot; + captchaId);
   // Next step is to get the solution of the uploaded captcha using the new captchaID
 });
 
-// you can also submit using a siteKey
-// captcha.submit(
-//   SITE_KEY,
-//   (err, newID) => {
-//     if (err) {
-//       console.log(err);
-//       return;
-//     }
-//     console.log(&quot;Captcha uploaded!: &quot; + captchaID);
-//     // Next step is to get the solution of the uploaded captcha using the new captchaID
-//   },
-//   SITE_URL
-// );
-
-// you can also submit using a url
-// captcha.submitUrl(url, (err, newID) => {
-//   if (err) {
-//     console.log(err);
-//     return;
-//   }
-//   console.log(&quot;Captcha uploaded!: &quot; + captchaID);
-//   // Next step is to get the solution of the uploaded captcha using the new captchaID
-// });
-
-// you can also submit using a base64 string
-// captcha.submitBase64(data, (err, newID) => {
-//   if (err) {
-//     console.log(err);
-//     return;
-//   }
-//   console.log(&quot;Captcha uploaded!: &quot; + captchaID);
-//   // Next step is to get the solution of the uploaded captcha using the new captchaID
-// });
+// Submit CaptchaV2 (using a siteKey + siteUrl)
+// CaptchaV2 will need to be solved by someone in real time
+//   so using the priority becomes important if you want faster captchas
+//   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
+//   If you want them faster, up the prio and you will pay one extra credit per captcha
+api.submit(
+  SITE_KEY,
+  (err, newID) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(&quot;Captcha uploaded!: &quot; + captchaId);
+    // Next step is to get the solution of the uploaded captcha using the new captchaID
+  },
+  SITE_URL,
+  OVERWRITE_PRIO_IF_YOU_WANT
+);
 
 // Get the solution of the captcha with a timeout of 40 seconds (optional)
 // this means that the callback will be called when the captcha is solved
 // usually is solved under 30s (default timeout is 30 seconds)
-captcha.getSolutionLoop(captchaID, 40, (err, solution) => {
+api.getSolutionLoop(captchaId, 40, (err, solution) => {
   if (err) {
     console.log(err);
     return;
@@ -217,26 +272,23 @@ captcha.getSolutionLoop(captchaID, 40, (err, solution) => {
 });
 
 // Tell 9kw the solution was correct or not
-captcha.isCorrect(captchaID, true);
+api.isCorrect(captchaId, true);
 
 // Get the 9kw server check info
-captcha.serverCheck((err, serverInfo) => {
+api.serverCheck((err, serverInfo) => {
   console.log(serverInfo);
 });
-
-// Get your account balance (credits)
-captcha.getBalance((err, balance) => {
-  console.log(balance);
-});
 </code></pre>
-<h2 id="development">Development</h2>
-<h3 id="linting-and-generating-docs">Linting and Generating Docs</h3>
-<pre class="prettyprint source"><code>npm run flow
+<h2 id="1.4.-development">1.4. Development</h2>
+<h3 id="1.4.1.-linting-and-generating-docs">1.4.1. Linting and Generating Docs</h3>
+<pre class="prettyprint source lang-sh"><code>npm run flow
 </code></pre>
-<h3 id="tests">Tests</h3>
+<h3 id="1.4.2.-tests">1.4.2. Tests</h3>
 <p>In order to run the tests, create a .env file as .env.default and put your account details in the correct ENV variables, then run:</p>
 <pre class="prettyprint source lang-sh"><code>npm run test
-</code></pre></article>
+</code></pre>
+<h2 id="1.5.-credits">1.5. Credits</h2>
+<p>This project was initially a fork of <a href="https://github.com/iamfreee/9kw_node.git">iamfreee/9kw_node</a></p></article>
     </section>
 
 
