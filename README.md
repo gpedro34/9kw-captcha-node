@@ -1,4 +1,4 @@
-# 1. kw
+# 1. 9kw
 
 This is an api wrapper for the 9kw captcha solver service. An Api Key is needed, generate using the 9kw website.
 
@@ -30,8 +30,6 @@ In alternative you can pass it as parameters when instantiating the API construc
 
 ```js
 const Api9kw = require("9kw-captcha-node");
-const captcha = Api9kw(9KW_API_KEY);
-
 const api = new Api9kw(/* You can pass parameters here or just use the ENV vars */);
 
 (async () => {
@@ -54,7 +52,11 @@ const api = new Api9kw(/* You can pass parameters here or just use the ENV vars 
     //   so using the priority becomes important if you want faster captchas
     //   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
     //   If you want them faster, up the prio and you will pay one extra credit per captcha
-    const captchaId = await api.asyncSubmit(SITEKEY, SITEURL, OVERWRITE_PRIO_IF_YOU_WANT);
+    const captchaId = await api.asyncSubmit(
+      SITEKEY,
+      SITEURL,
+      OVERWRITE_PRIO_IF_YOU_WANT
+    );
     console.log(`CAPTCHA ID: ${captchaId}`);
 
     // Get the solution of the captcha with a timeout of 40 seconds (optional)
@@ -78,7 +80,7 @@ const api = new Api9kw(/* You can pass parameters here or just use the ENV vars 
 
 ```js
 const Api9kw = require("9kw");
-const api = new Api9kw();
+const api = new Api9kw(/* You can pass parameters here or just use the ENV vars */);
 
 // Get your account balance (credits)
 api.getBalance((err, balance) => {
