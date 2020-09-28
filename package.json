@@ -1,6 +1,6 @@
 {
   "name": "9kw-captcha-node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "9kw API Wrapper to solve captchas",
   "main": "src/index.js",
   "scripts": {
