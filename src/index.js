@@ -37,7 +37,7 @@ const callbackSuperAgent = (err, response, callback, async = false) => {
   }
 };
 
-module.exports = class {
+module.exports = class Api9kw {
   /**
    * 9kw Captcha object constructor
    * Supports solving of Captcha Types:
@@ -51,7 +51,8 @@ module.exports = class {
    * @param {String} [oldSource=process.env.CAPTCHA_OLD_SOURCE_9KW || ""] 9kw configured Old Source Tag
    * @param {Number} [prio=process.env.CAPTCHA_PRIO_9KW || 0] Priority (higher costs more points)
    * @param {Number} [debug=process.env.CAPTCHA_DEBUG_9KW || 0] Debug flag included on 9kw API calls (not for code debug itself)
-   * @constructor
+   * @constructs
+   * @namespace
    */
   constructor(
     apiKey = process.env.CAPTCHA_API_KEY_9KW,
@@ -89,6 +90,7 @@ module.exports = class {
    * @param {Function} callback Needs to handle err<Object|String|null>, response<Object|String>
    * @param {String} [siteUrl=undefined] URL of the site containing recaptcha
    * @param {Number} [priority=process.env.CAPTCHA_PRIO_9KW] Optional overwrite the priority from API. Usefull to have different priorities for different captchas in the same environment.
+   * @method
    */
   submit(
     imageUrlOrSiteKey,
@@ -114,6 +116,7 @@ module.exports = class {
   /**
    * Submit the captcha (Image, Audio or Site Key) - Async
    * Promise will resolve with err or captchaID where the captchaID is an integer
+   * @method
    * @async
    * @param {String} imageUrlOrSiteKey Path to the image or siteKey (for siteKey solve the siteUrl must be set)
    * @param {String} [siteUrl=undefined] URL of the site containing recaptcha (required for siteKey solve)
@@ -153,6 +156,7 @@ module.exports = class {
   /**
    * Submit the captcha File (Image or Audio)
    * Callback will receive err, captchaID where the captchaID is an integer
+   * @method
    * @param {String} pathToFile Path to the image or siteKey
    * @param {Function} callback Needs to handle err<Object|String|null>, response<Object|String>
    * @param {String} [siteUrl=undefined] URL of the site containing recaptcha
@@ -168,6 +172,7 @@ module.exports = class {
   /**
    * Submit the captcha File (Image or Audio) - Async
    * Promise will resolve with err or captchaID where the captchaID is an integer
+   * @method
    * @async
    * @param {String} pathToFile Path to the image or siteKey (for siteKey solve the siteUrl must be set)
    * @param {String} [siteUrl=undefined] URL of the site containing recaptcha (required for siteKey solve)
@@ -187,6 +192,7 @@ module.exports = class {
   /**
    * Submit the captcha (Base64)
    * Callback will receive err, captchaID where the captchaID is an integer
+   * @method
    * @param {String} data Base64 string
    * @param {Function} callback Needs to handle err<Object|String|null>, response<Object|String>
    */
@@ -203,6 +209,7 @@ module.exports = class {
   /**
    * Submit the captcha (Base64)
    * Promise will resolve with err, captchaID where the captchaID is an integer
+   * @method
    * @async
    * @param {String} data Base64 string
    */
@@ -226,6 +233,7 @@ module.exports = class {
    * where solution can be a string or empty string if no solution yet
    * this method should be called until there is a solution
    * ex: every 3 seconds
+   * @method
    * @param {String} captchaID
    * @param {Function} callback Needs to handle err<Object|String|null>, solution<Object|String>
    */
@@ -249,6 +257,7 @@ module.exports = class {
    * where solution can be a string or empty string if no solution yet
    * this method should be called until there is a solution
    * ex: every 3 seconds
+   * @method
    * @async
    * @param {String} captchaID
    */
@@ -274,6 +283,7 @@ module.exports = class {
    * Tries to get the solution before the timeout every 3 seconds
    * If timeout, callback is called with error
    * If solution, callback is called with null, solution
+   * @method
    * @param {String} captchaID
    * @param {Function} callback Needs to handle err<Object|String|null>, solution<Object|String>
    * @param {Number} [timeout=30] seconds to giveup (30 is a good number)
@@ -323,6 +333,7 @@ module.exports = class {
    * Tries to get the solution before the timeout every 3 seconds
    * If timeout, Promise will reject with error
    * If solution, Promise will resolve with with solution
+   * @method
    * @async
    * @param {String} captchaID
    * @param {Number} [timeout=30] seconds to giveup (30 is a good number)
@@ -367,6 +378,7 @@ module.exports = class {
   /**
    * Say to 9kw if the captcha solution you got from the getSolution method
    * is correct or incorrect
+   * @method
    * @param {String} captchaID
    * @param {Boolean} [isCorrect=false]
    * @param {Function} [optionalCallback] Needs to handle err<Object|String|null>, resText<String>
@@ -393,6 +405,7 @@ module.exports = class {
    * is correct or incorrect
    * Promise can resolve with response.text
    * Promise can reject with error
+   * @method
    * @async
    * @param {String} captchaID
    * @param {Boolean} [isCorrect=false]
@@ -415,6 +428,7 @@ module.exports = class {
 
   /**
    * Get the server info
+   * @method
    * @param {Function} callback Needs to handle err<Object|String|null>, serverinfoString<String>
    */
   serverCheck(callback) {
@@ -431,6 +445,7 @@ module.exports = class {
    * Get the server info
    * If there is an error Promise will reject with error
    * If successful Promise will resolve with res.text
+   * @method
    * @async
    */
   asyncServerCheck() {
@@ -447,6 +462,7 @@ module.exports = class {
 
   /**
    * Get the user balance
+   * @method
    * @param {Function} callback Needs to handle err<Object|String|null>, response<String>
    */
   getBalance(callback) {
@@ -463,6 +479,7 @@ module.exports = class {
 
   /**
    * Get the user balance
+   * @method
    * @async
    */
   asyncGetBalance() {
