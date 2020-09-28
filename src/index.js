@@ -416,6 +416,7 @@ module.exports = class Api9kw {
         .query("action=usercaptchacorrectback")
         .query(`id=${captchaID}`)
         .query(`correct=${isCorrect ? 1 : 0}`)
+        .query(`json=1`)
         .end((err, res) => {
           if (err) {
             reject(err);

@@ -10,7 +10,7 @@
     "move:docs": "cp -r ./docs/9kw-captcha-node/1.0.3/* ./docs/ && rm -r ./docs/9kw-captcha-node",
     "serve:docs": "serve docs",
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
-    "test": "mocha test/ -t 0 --check-leaks --exit --inline-diffs --recursive"
+    "test": "mocha test/ -t 0 --check-leaks --inline-diffs --recursive"
   },
   "keywords": [
     "9kw",

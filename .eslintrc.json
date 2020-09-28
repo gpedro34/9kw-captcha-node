@@ -19,6 +19,9 @@
     "sourceType": "module"
   },
   "rules": {
+    "no-unused-vars": 0,
+    "quotes": 0,
+    "comma-dangle": 0,
     "implicit-arrow-linebreak": 0,
     "function-paren-newline": 0,
     "comma-dangle": 0,

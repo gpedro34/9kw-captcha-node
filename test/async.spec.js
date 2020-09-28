@@ -1,89 +1,119 @@
 // @ts-nocheck
-const assert = require('assert');
-const api_9kw = require('../src/index');
-const config = require('./config');
+const assert = require("assert");
+const Api9kw = require("../src/index");
+const config = require("./config");
 
-describe('Captcha', () => {
-  let captcha = null;
+describe("Async/Await", () => {
+  let api = null;
 
   before(() => {
-    captcha = api_9kw(config.apiKey);
-    captcha.debug = 1;
+    api = new Api9kw();
   });
 
-  describe('Submit API', () => {
-    describe('#submit()', () => {
-      it('with valid image provided', async (done) => {
-        const { err, captchaID } = await captcha.asyncSubmit(
-          './test/captcha.png',
-        );
-        assert(err === null, err);
-        assert(typeof captchaID === 'number');
+  describe("Submit API", () => {
+    describe("#asyncSubmit()", () => {
+      it("with valid SiteKey + SiteURL", async (done) => {
+        try {
+          const captchaId = await api.asyncSubmit(
+            config.siteKey,
+            config.siteUrl
+          );
+          assert(typeof captchaId === "number");
+        } catch (err) {
+          assert(typeof err.message === "string");
+          done(err);
+        }
+      });
+      it("with valid image url provided", async (done) => {
+        try {
+          const captchaId = await api.asyncSubmit(config.image_url);
+          assert(typeof captchaId === "number");
+        } catch (err) {
+          assert(typeof err.message === "string");
+          done(err);
+        }
+      });
+    });
+    describe("#asyncSubmitFile()", () => {
+      it("with valid path to file", async (done) => {
+        try {
+          const captchaId = await api.asyncSubmitFile(config.pathToFile);
+          assert(typeof captchaId === "number");
+        } catch (err) {
+          assert(typeof err.message === "string");
+          done(err);
+        }
+      });
+    });
+
+    describe("#asyncSubmitBase64()", () => {
+      it("with valid base64 provided", async (done) => {
+        try {
+          const captchaId = await api.asyncSubmitBase64(config.image_base64);
+          assert(typeof captchaId === "number");
+        } catch (err) {
+          assert(typeof err.message === "string");
+          done(err);
+        }
+      });
+    });
+
+    describe("#asyncGetSolutionLoop()", () => {
+      it("with a valid debug captcha id", async (done) => {
+        try {
+          const solution = await api.asyncGetSolutionLoop(111111, 400);
+          assert(typeof solution === "string");
+        } catch (err) {
+          assert(typeof err.message === "string");
+        }
         done();
       });
     });
 
-    describe('#submitBase64()', () => {
-      it('with valid base64 provided', async (done) => {
-        const { err, captchaID } = await captcha.asyncSubmitBase64(
-          config.image_base64,
-        );
-        assert(err === null, err);
-        assert(typeof captchaID === 'number');
-        done();
+    describe("#asyncIsCorrect()", () => {
+      it("should mark the captcha as failed", async (done) => {
+        try {
+          const captchaId = await api.asyncSubmitFile(config.pathToFile);
+          const resFailed = await api.asyncIsCorrect(captchaId);
+          assert(resFailed.status.success === false, resFailed);
+          done();
+        } catch (err) {
+          assert(err === null, err);
+        }
       });
-    });
-
-    describe('#submitUrl()', () => {
-      it('with valid image url provided', async (done) => {
-        const { err, captchaID } = await captcha.asyncSubmitUrl(
-          config.image_url,
-        );
-        assert(err === null, err);
-        assert(typeof captchaID === 'number');
-        done();
-      });
-    });
-
-    describe('#getSolution()', () => {
-      it('valid debug captcha id should run without problems', async (done) => {
-        const { err, solution } = await captcha.asyncGetSolution('11111111');
-        done(err);
-      });
-    });
-
-    describe('#getSolutionLoop()', () => {
-      it('should run without problems with a valid debug captcha id', async (done) => {
-        const { err, solution } = await captcha.asyncGetSolutionLoop(
-          '11111111',
-          40,
-        );
-        done(err);
-      });
-    });
-
-    describe('#isCorrect()', () => {
-      it('should send the captcha feedback without problemas', async (done) => {
-        const { err, res } = await captcha.asyncIsCorrect('11111111', true);
-        assert(err === null, err);
-        assert(res === 'OK', res);
-        done();
+      it("should mark the captcha as successful", async (done) => {
+        try {
+          const captchaId = await api.asyncSubmitFile(config.pathToFile);
+          const resSuccess = await api.asyncIsCorrect(captchaId, true);
+          assert(resSuccess.status.success === true, resSuccess);
+          done();
+        } catch (err) {
+          assert(err === null, err);
+        }
       });
     });
   });
 
-  describe('General API', () => {
-    describe('#serverCheck()', () => {
-      it('should get the server info without problems', async (done) => {
-        const { err, res } = await captcha.asyncServerCheck();
-        done(err);
+  describe("General API", () => {
+    describe("#asyncServerCheck()", () => {
+      it("should get the server info without problems", async (done) => {
+        try {
+          const serverCheck = await api.asyncServerCheck();
+          done(assert(typeof serverCheck === "string"));
+        } catch (err) {
+          done(err);
+        }
       });
     });
 
-    describe('#getBalance()', () => {
-      it('should get the account balance', async (done) => {
-        const { err, res } = await captcha.asyncGetBalance();
-        done(err);
+    describe("#asyncGetBalance()", () => {
+      it("should get the account balance", async (done) => {
+        try {
+          const balance = await api.asyncGetBalance();
+          assert(typeof balance === "number");
+        } catch (err) {
+          done(err);
+        }
       });
     });
   });

@@ -171,7 +171,10 @@ In order to run the tests, create a .env file as .env.default and put your accou
 ```sh
 npm run test
 ```
-NOTE: Tests need to be handled yet!
+
+Tests are not working on Node > 10
+
+- [StackOverflow](https://stackoverflow.com/questions/56697360/how-to-fix-node12388-dep0066-deprecationwarning-outgoingmessage-prototype)
 
 ## 1.5. Credits
 
