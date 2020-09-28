@@ -1,13 +1,13 @@
 {
   "name": "9kw-captcha-node",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "9kw API Wrapper to solve captchas",
   "main": "src/index.js",
   "scripts": {
     "flow": "npm run lint && npm run docs",
     "docs": "npm run build:docs && npm run move:docs",
     "build:docs": "./node_modules/.bin/jsdoc -c jsdoc.json || true",
-    "move:docs": "cp -r ./docs/9kw-captcha-node/1.0.2/* ./docs/ && rm -r ./docs/9kw-captcha-node",
+    "move:docs": "cp -r ./docs/9kw-captcha-node/1.0.3/* ./docs/ && rm -r ./docs/9kw-captcha-node",
     "serve:docs": "serve docs",
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
     "test": "mocha test/ -t 0 --check-leaks --exit --inline-diffs --recursive"
