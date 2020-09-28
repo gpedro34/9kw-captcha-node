@@ -171,6 +171,7 @@ In order to run the tests, create a .env file as .env.default and put your accou
 ```sh
 npm run test
 ```
+NOTE: Tests need to be handled yet!
 
 ## 1.5. Credits
 
