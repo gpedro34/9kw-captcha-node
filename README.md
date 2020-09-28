@@ -1,116 +1,143 @@
-# 9kw
+# 1. kw
 
 This is an api wrapper for the 9kw captcha solver service. An Api Key is needed, generate using the 9kw website.
 
-- [Documentation](https://gpedro34.github.io/9kw-captcha-node/module.exports.html)
+- [9kw.eu](https://www.9kw.eu/?r=139389)
+- [Library Documentation](https://gpedro34.github.io/9kw-captcha-node/module.exports.html)
 
-## Installation
+## 1.1. Installation
 
 node:
 
 ```sh
-npm install 9kw
+npm install 9kw-captcha-node
 
 ```
 
-## Promises - Async/Await
+This library supports environment variables to pass parameters like API Key:
 
-**NOTE: All methods return Promises.**
+| ENV variable           | Type   | Description                                                |
+| ---------------------- | ------ | ---------------------------------------------------------- |
+| CAPTCHA_API_KEY_9KW    | String | API Key                                                    |
+| CAPTCHA_SOURCE_9KW     | String | 9kw Source (app indicator)                                 |
+| CAPTCHA_OLD_SOURCE_9KW | String | 9kw Old Source (indicator for captcha type)                |
+| CAPTCHA_PRIO_9KW       | Number | 9kw default priority                                       |
+| CAPTCHA_DEBUG_9KW      | Number | Don't spend credits and get fake solutions. For testing... |
+
+In alternative you can pass it as parameters when instantiating the API constructor
+
+## 1.2. Promises - Async/Await
 
 ```js
-const api9kw = require("9kw");
-const captcha = new api9kw(9KW_API_KEY);
+const Api9kw = require("9kw-captcha-node");
+const captcha = Api9kw(9KW_API_KEY);
+
+const api = new Api9kw(/* You can pass parameters here or just use the ENV vars */);
 
 (async () => {
   try {
-    // Submit the image file with the captcha
-    await captcha.async.submit("./captcha.png");
+    // Get the balance of credits from 9kw
+    const balance = await api.asyncGetBalance();
+    console.log(`BALANCE: ${balance} credits`);
 
-    // you can also submit using a siteKey
-    // await captcha.async.submit(SITE_KEY, SITE_URL);
+    // Submit a local image file with the captcha
+    // const captchaId = await api.asyncSubmitFile(config.pathToFile);
 
-    // you can also submit using a url
-    // await captcha.async.submitUrl(url);
+    // Submit using a Image Base 64 of the captha
+    // const captchaId = await api.asyncSubmitBase64(config.image_base64);
 
-    // you can also submit using a base64 string
-    // await captcha.async.submitBase64(data);
+    // Submit using a Image URL of the captha
+    // const captchaId = await api.asyncSubmitUrl(config.image_url);
+
+    // Submit CaptchaV2 (using a siteKey + siteUrl)
+    // CaptchaV2 will need to be solved by someone in real time
+    //   so using the priority becomes important if you want faster captchas
+    //   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
+    //   If you want them faster, up the prio and you will pay one extra credit per captcha
+    const captchaId = await api.asyncSubmit(SITEKEY, SITEURL, OVERWRITE_PRIO_IF_YOU_WANT);
+    console.log(`CAPTCHA ID: ${captchaId}`);
 
     // Get the solution of the captcha with a timeout of 40 seconds (optional)
     // this means that the callback will be called when the captcha is solved
+    // For image Solving 9kw seems to store the solutions in their own DB
+    //   and some are instantaneous others may take some more but usually under 30 sec
+    // For CaptchaV2 (sitekey + siteUrl) will need to be solved by someone in real time
+    //   so using the priority becomes important if you want faster captchas
+    //   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
+    //   If you want them faster, up the prio and you will pay one extra credit per captcha
     // usually is solved under 30s (default timeout is 30 seconds)
-    await captcha.async.getSolutionLoop(captchaID, 40);
-
-    // Tell 9kw the solution was correct or not
-    await captcha.async.isCorrect(captchaID, true);
-
-    // Get the 9kw server check info
-    await captcha.async.serverCheck();
-
-    // Get your account balance (credits)
-    await captcha.async.getBalance();
+    const solution = await api.asyncGetSolutionLoop(captchaId, 300);
+    console.log("SOLUTION: ", solution);
   } catch (err) {
-    console.error(err);
+    console.error(err); // Timeout or NO_USER
   }
 })();
 ```
 
-## Callbacks
-
-**NOTE: All methods are asynchronous. Use the callbacks correctly.**
+## 1.3. Callbacks
 
 ```js
-const api9kw = require("9kw");
-const captcha = new api9kw(9KW_API_KEY);
+const Api9kw = require("9kw");
+const api = new Api9kw();
 
-// Submit the captcha, you can also submit using an url or base64 string
-// .submitUrl(url, cb) or .submitBase64(data, cb) methods
-captcha.submit("./captcha.png", (err, newID) => {
+// Get your account balance (credits)
+api.getBalance((err, balance) => {
+  console.log(balance);
+});
+
+// Submit a local image file with the captcha
+// api.submitFile("./captcha.png", (err, newID) => {
+//   if (err) {
+//     console.log(err);
+//     return;
+//   }
+//   console.log("Captcha uploaded!: " + captchaId);
+//   // Next step is to get the solution of the uploaded captcha using the new captchaID
+// });
+
+// Submit using a Image Base 64 of the captha
+// api.submitUrl(base64, (err, newID) => {
+//   if (err) {
+//     console.log(err);
+//     return;
+//   }
+//   console.log("Captcha uploaded!: " + captchaId);
+//   // Next step is to get the solution of the uploaded captcha using the new captchaID
+// });
+
+// Submit using a Image URL of the captha
+api.submit(URL, (err, newID) => {
   if (err) {
     console.log(err);
     return;
   }
-  console.log("Captcha uploaded!: " + captchaID);
+  console.log("Captcha uploaded!: " + captchaId);
   // Next step is to get the solution of the uploaded captcha using the new captchaID
 });
 
-// you can also submit using a siteKey
-// captcha.submit(
-//   SITE_KEY,
-//   (err, newID) => {
-//     if (err) {
-//       console.log(err);
-//       return;
-//     }
-//     console.log("Captcha uploaded!: " + captchaID);
-//     // Next step is to get the solution of the uploaded captcha using the new captchaID
-//   },
-//   SITE_URL
-// );
-
-// you can also submit using a url
-// captcha.submitUrl(url, (err, newID) => {
-//   if (err) {
-//     console.log(err);
-//     return;
-//   }
-//   console.log("Captcha uploaded!: " + captchaID);
-//   // Next step is to get the solution of the uploaded captcha using the new captchaID
-// });
-
-// you can also submit using a base64 string
-// captcha.submitBase64(data, (err, newID) => {
-//   if (err) {
-//     console.log(err);
-//     return;
-//   }
-//   console.log("Captcha uploaded!: " + captchaID);
-//   // Next step is to get the solution of the uploaded captcha using the new captchaID
-// });
+// Submit CaptchaV2 (using a siteKey + siteUrl)
+// CaptchaV2 will need to be solved by someone in real time
+//   so using the priority becomes important if you want faster captchas
+//   300 seconds (with 0 prio) is a reasonable number so you don't miss solved captchas
+//   If you want them faster, up the prio and you will pay one extra credit per captcha
+api.submit(
+  SITE_KEY,
+  (err, newID) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log("Captcha uploaded!: " + captchaId);
+    // Next step is to get the solution of the uploaded captcha using the new captchaID
+  },
+  SITE_URL,
+  OVERWRITE_PRIO_IF_YOU_WANT
+);
 
 // Get the solution of the captcha with a timeout of 40 seconds (optional)
 // this means that the callback will be called when the captcha is solved
 // usually is solved under 30s (default timeout is 30 seconds)
-captcha.getSolutionLoop(captchaID, 40, (err, solution) => {
+api.getSolutionLoop(captchaId, 40, (err, solution) => {
   if (err) {
     console.log(err);
     return;
@@ -119,28 +146,23 @@ captcha.getSolutionLoop(captchaID, 40, (err, solution) => {
 });
 
 // Tell 9kw the solution was correct or not
-captcha.isCorrect(captchaID, true);
+api.isCorrect(captchaId, true);
 
 // Get the 9kw server check info
-captcha.serverCheck((err, serverInfo) => {
+api.serverCheck((err, serverInfo) => {
   console.log(serverInfo);
 });
-
-// Get your account balance (credits)
-captcha.getBalance((err, balance) => {
-  console.log(balance);
-});
 ```
 
-## Development
+## 1.4. Development
 
-### Linting and Generating Docs
+### 1.4.1. Linting and Generating Docs
 
-```
+```sh
 npm run flow
 ```
 
-### Tests
+### 1.4.2. Tests
 
 In order to run the tests, create a .env file as .env.default and put your account details in the correct ENV variables, then run:
 
@@ -148,6 +170,6 @@ In order to run the tests, create a .env file as .env.default and put your accou
 npm run test
 ```
 
-## Credits
+## 1.5. Credits
 
-This project is a fork of [iamfreee/9kw_node](https://github.com/iamfreee/9kw_node.git)
+This project was initially a fork of [iamfreee/9kw_node](https://github.com/iamfreee/9kw_node.git)

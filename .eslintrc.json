@@ -19,6 +19,10 @@
     "sourceType": "module"
   },
   "rules": {
+    "implicit-arrow-linebreak": 0,
+    "function-paren-newline": 0,
+    "comma-dangle": 0,
+    "quotes": 0,
     "no-console": 0,
     "max-len": 0,
     "camelcase": "warn",
