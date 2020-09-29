@@ -174,7 +174,7 @@ const api = new Api9kw(/* You can pass parameters here or just use the ENV vars 
     // const captchaId = await api.asyncSubmitBase64(config.image_base64);
 
     // Submit using a Image URL of the captha
-    // const captchaId = await api.asyncSubmitUrl(config.image_url);
+    // const captchaId = await api.asyncSubmit(config.image_url);
 
     // Submit CaptchaV2 (using a siteKey + siteUrl)
     // CaptchaV2 will need to be solved by someone in real time
@@ -224,7 +224,7 @@ api.getBalance((err, balance) => {
 // });
 
 // Submit using a Image Base 64 of the captha
-// api.submitUrl(base64, (err, newID) => {
+// api.submitBase64(base64, (err, newID) => {
 //   if (err) {
 //     console.log(err);
 //     return;
